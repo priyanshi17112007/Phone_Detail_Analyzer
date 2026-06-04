@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PHNX_ANALYZER // TERMINAL</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <style>
+        /* INJECT THE COMPLETE CYBER-UI BLUEPRINT STYLING FROM ABOVE HERE */
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;900&family=Share+Tech+Mono&display=swap');
+        :root {
+            --bg-matrix: #030708;
+            --cyber-neon: #00ff66;
+            --cyber-alert: #ff0055;
+            --cyber-glitch: #00f0ff;
+            --border-glow: rgba(0, 255, 102, 0.25);
+        }
+        body {
+            background-color: var(--bg-matrix);
+            font-family: 'Share Tech Mono', monospace;
+            background-image: linear-gradient(rgba(18, 24, 27, 0.94), rgba(3, 7, 8, 0.98)), linear-gradient(90deg, rgba(0, 255, 102, 0.03) 1px, transparent 1px), linear-gradient(rgba(0, 255, 102, 0.03) 1px, transparent 1px);
+            background-size: 100% 100%, 25px 25px, 25px 25px;
+        }
+        body::before {
+            content: " "; display: block; position: fixed; top: 0; left: 0; bottom: 0; right: 0;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.04), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.04));
+            z-index: 9999; opacity: 0.6; pointer-events: none; background-size: 100% 3px, 6px 100%;
+        }
+        .cyber-panel {
+            background: rgba(6, 15, 12, 0.9);
+            border: 2px solid var(--cyber-neon);
+            box-shadow: 0 0 25px var(--border-glow), inset 0 0 15px rgba(0, 255, 102, 0.05);
+            clip-path: polygon(0 0, 93% 0, 100% 35px, 100% 100%, 7% 100%, 0% calc(100% - 35px));
+        }
+        .cyber-title {
+            font-family: 'Orbitron', sans-serif; letter-spacing: 4px; color: #ffffff;
+            text-shadow: 2px 2px 0px var(--cyber-glitch), -2px -2px 0px var(--cyber-alert);
+        }
+        .cyber-input {
+            background: rgba(0, 0, 0, 0.8); border: 1px solid var(--cyber-glitch); color: var(--cyber-glitch);
+            font-family: 'Share Tech Mono', monospace; letter-spacing: 2px;
+        }
+        .cyber-input:focus { outline: none; border-color: var(--cyber-neon); box-shadow: 0 0 15px rgba(0, 255, 102, 0.3); }
+        .cyber-btn {
+            background: transparent; color: var(--cyber-neon); border: 1px solid var(--cyber-neon);
+            font-family: 'Orbitron', sans-serif; text-transform: uppercase; transition: all 0.2s linear;
+        }
+        .cyber-btn:hover { background: var(--cyber-neon); color: var(--bg-matrix); box-shadow: 0 0 20px var(--cyber-neon); }
+        .data-node { background: rgba(0, 0, 0, 0.4); border-left: 3px solid var(--cyber-glitch); }
+        @keyframes scanning { 0% { top: 0%; opacity: 0; } 50% { opacity: 0.8; } 100% { top: 100%; opacity: 0; } }
+        .radar-scanline { position: absolute; left:0; width: 100%; height: 3px; background: var(--cyber-neon); box-shadow: 0 0 12px var(--cyber-neon); animation: scanning 2s linear infinite; }
+    </style>
+</head>
+<body class="text-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-xl cyber-panel p-8 pt-10 pb-10">
+        <div id="radarLine" class="radar-scanline hidden"></div>
+
+        <div class="mb-2 flex justify-between text-[10px] text-green-500/50 tracking-widest uppercase">
+            <span>SYS_LOC // PORT:5000</span>
+            <span>SECURE TERMINAL ACTIVE</span>
+        </div>
+
+        <h1 class="text-2xl font-black text-center mb-1 cyber-title">NUM_LOOKUP.IDX</h1>
+        <p class="text-xs text-center mb-8 text-cyan-400 tracking-wider">PHNX PROTOCOL // WIRELESS TELEMETRY INTERCEPTOR</p>
+
+        <div class="flex flex-col sm:flex-row gap-3 mb-6">
+            <input type="text" id="phoneNumber" placeholder="ENTER TARGET NUMBER (ex: +14158586273)" 
+                   class="flex-1 px-4 py-3 cyber-input text-sm focus:outline-none">
+            <button onclick="analyzeNumber()" class="px-8 py-3 cyber-btn font-bold tracking-wider text-sm">
+                RUN_SCAN
+            </button>
+        </div>
+
+        <div id="loading" class="hidden text-center text-green-400 text-sm py-4 tracking-widest animate-pulse">
+            &gt; CORRELATING DATA PACKETS FROM GLOBAL GATEWAYS...
+        </div>
+        <div id="error" class="hidden bg-red-950/40 border border-red-500 text-red-400 p-4 font-mono text-xs tracking-wide mb-4"></div>
+
+        <div id="resultsCard" class="hidden space-y-6">
+            <div class="flex items-center justify-between border-b border-green-500/30 pb-2">
+                <span class="text-xs font-bold tracking-widest text-green-400">// PACKET RECONSTRUCT COMPLETE</span>
+                <span class="text-[10px] text-gray-500">STATUS: 200_OK</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="data-node p-3">
+                    <span class="block text-[10px] text-cyan-400 uppercase tracking-widest">FORMATTED ADDR</span>
+                    <span id="resNumber" class="text-base font-bold text-white tracking-wide">-</span>
+                </div>
+                <div class="data-node p-3">
+                    <span class="block text-[10px] text-cyan-400 uppercase tracking-widest">GEO_LOCATION</span>
+                    <span id="resLocation" class="text-base font-bold text-white tracking-wide">-</span>
+                </div>
+                <div class="data-node p-3">
+                    <span class="block text-[10px] text-cyan-400 uppercase tracking-widest">CARRIER SUITE</span>
+                    <span id="resCarrier" class="text-base font-bold text-white tracking-wide">-</span>
+                </div>
+                <div class="data-node p-3">
+                    <span class="block text-[10px] text-cyan-400 uppercase tracking-widest">HARDWARE TYPE</span>
+                    <span id="resLineType" class="text-base font-bold text-white tracking-wide uppercase">-</span>
+                </div>
+            </div>
+
+            <div class="bg-black/60 border border-cyan-500/30 p-4 space-y-3 relative">
+                <h3 class="text-xs font-bold tracking-widest text-cyan-400">// SWITCH TELEMETRY (LIVE)</h3>
+                
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-400">ACTIVE TRACE ON-CALL:</span>
+                    <span id="resOnCall" class="font-bold tracking-widest">-</span>
+                </div>
+                <div class="flex justify-between items-center text-sm">
+                    <span class="text-gray-400">GATEWAY MATRIX STATE:</span>
+                    <span id="resLiveStatus" class="font-bold text-white tracking-wider">-</span>
+                </div>
+                <div class="flex justify-between items-center border-t border-gray-800 pt-2 text-sm">
+                    <span class="text-gray-400">LAST TELECOM INTERACTION:</span>
+                    <span id="resLastCall" class="text-xs text-cyan-300 font-mono">-</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        async function analyzeNumber() {
+            const number = document.getElementById('phoneNumber').value.trim();
+            const loading = document.getElementById('loading');
+            const error = document.getElementById('error');
+            const resultsCard = document.getElementById('resultsCard');
+            const radarLine = document.getElementById('radarLine');
+
+            error.classList.add('hidden');
+            resultsCard.classList.add('hidden');
+            radarLine.classList.add('hidden');
+
+            if(!number) {
+                error.innerHTML = "ERROR_CODE_0x14: TARGET_NUMBER_STRING_NULL.<br>Please enter a phone code destination.";
+                error.classList.remove('hidden');
+                return;
+            }
+
+            loading.classList.remove('hidden');
+            radarLine.classList.remove('hidden');
+
+            try {
+                const response = await fetch(`/api/analyze?number=${encodeURIComponent(number)}`);
+                const data = await response.json();
+                loading.classList.add('hidden');
+
+                if (!response.ok) {
+                    error.innerHTML = `SCAN_FAILURE // ${data.error || "UNKNOWN SERVER INTERFACE ERROR."}`;
+                    error.classList.remove('hidden');
+                    radarLine.classList.add('hidden');
+                    return;
+                }
+
+                // Inject Parsed Data Fields
+                document.getElementById('resNumber').textContent = data.international_format;
+                document.getElementById('resLocation').textContent = `${data.location}, ${data.country}`;
+                document.getElementById('resCarrier').textContent = data.carrier;
+                document.getElementById('resLineType').textContent = data.line_type;
+                
+                // Color Code Live Critical On-Call State Matrix
+                const onCallBadge = document.getElementById('resOnCall');
+                onCallBadge.textContent = data.is_on_call === "Yes" ? "BUSY_ON_LINE" : "IDLE_STANDBY";
+                if(data.is_on_call === "Yes") {
+                    onCallBadge.className = "text-red-500 font-bold tracking-widest drop-shadow-[0_0_5px_rgba(239,68,68,0.5)]";
+                } else {
+                    onCallBadge.className = "text-green-400 font-bold tracking-widest drop-shadow-[0_0_5px_rgba(74,222,128,0.5)]";
+                }
+
+                document.getElementById('resLiveStatus').textContent = data.live_status.toUpperCase();
+                document.getElementById('resLastCall').textContent = data.last_call.toUpperCase();
+
+                resultsCard.classList.remove('hidden');
+
+            } catch (err) {
+                loading.classList.add('hidden');
+                radarLine.classList.add('hidden');
+                error.innerHTML = "CRITICAL_NETWORK_EXCEPTION:<br>Failed to bridge communication to local Flask service.";
+                error.classList.remove('hidden');
+            }
+        }
+    </script>
+</body>
+</html>
