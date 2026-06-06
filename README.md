@@ -10,6 +10,10 @@ A modern **OSINT-inspired Phone Number Analysis Platform** built with **Python, 
 Designed as a portfolio project to demonstrate **API integration, backend development, frontend interaction, and secure application architecture**.
 
 ---
+## 📸 Screenshots
+
+### 🏠 Home Page
+![Home Page](PHONE_DETAIL_ANALYZER.png)
 
 # 🌟 Features
 
